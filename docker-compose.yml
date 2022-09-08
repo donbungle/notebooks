@@ -1,0 +1,15 @@
+version: "3"
+services:
+  r4_jupyter:
+    build: 
+      context: .
+    ports:
+      - 9600:8888
+    volumes:
+      # - r4_jupyter_vol:/project
+      - ./notebooks:/project/notebooks
+      - ./data:/project/data
+
+#volumes:
+  #r4_jupyter_vol:
+
