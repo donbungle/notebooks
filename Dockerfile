@@ -8,6 +8,7 @@ RUN conda install \
     pandas \
     tensorflow \
     matplotlib \
+    sklearn \
     jupyterlab
 COPY ./README.md /project
 COPY ./data /project/data
