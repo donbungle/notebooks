@@ -1,4 +1,5 @@
 data/borrar/*
+data/
 *.bundle.*
 lib/
 node_modules/
