@@ -1,0 +1,32 @@
+FROM continuumio/anaconda3:2022.05
+WORKDIR /project
+# RUN conda install \
+#    xarray \
+#    netCDF4 \
+#    bottleneck \
+#    numpy \
+#    pandas \
+#    tensorflow \
+#    matplotlib \
+#    scikit-learn \
+#    pyspark \
+#    jupyterlab
+COPY ./requirements.yml /project
+RUN conda update -n base -c defaults conda
+# RUN conda env update --file /project/requirements.yml
+# RUN conda env -n envbase update --file /project/requirements.yml
+# conda env update --file /project/requirements.yml
+# RUN conda env update -n envbase --file environment.yml
+# RUN conda install -n envbase --file /project/requirements.yml 
+
+# RUN conda update -n base -c defaults conda
+# RUN conda update --file requirements.yml
+
+
+COPY ./README.md /project
+COPY ./data /project/data
+COPY ./notebooks /project/notebooks
+# RUN conda env create --file /project/requirements.yml -n viper
+# RUN conda install --name root --file /project/requirements.yml
+
+CMD ["jupyter-lab","--ip=0.0.0.0","--no-browser","--allow-root"]

@@ -8,7 +8,12 @@ RUN conda install \
     pandas \
     tensorflow \
     matplotlib \
-    sklearn \
+    scikit-learn \
+    sqlalchemy \
+    plotly \
+    missingno \
+    pymysql \
+    psycopg2 \
     jupyterlab
 COPY ./README.md /project
 COPY ./data /project/data

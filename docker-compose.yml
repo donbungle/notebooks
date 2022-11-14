@@ -3,16 +3,108 @@ services:
   r4_jupyter:
     build: 
       context: .
+      dockerfile: Dockerfile.anaconda
     ports:
       - 9600:8888
+    networks:
+      - notebook_nw
     volumes:
       # - r4_jupyter_vol:/project
       - ./notebooks:/project/notebooks
       - ./data:/project/data
 
-#volumes:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql_notebook
+    restart: "always"
+    ports:
+      - "9603:3306"
+    networks:
+      - notebook_nw
+    volumes:
+      - mysql:/var/lib/mysql
+     # - ./mysql/config/initdb:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: notebook
+      MYSQL_USER: mysql_user
+      MYSQL_PASSWORD: 123456
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: phpmyadmin_notebook
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: 123456
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_USER: mysql_user
+      MYSQL_PASSWORD: 123456
+      # UPLOAD_LIMIT: ${UPLOAD_LIMIT}
+      # MEMORY_LIMIT: ${MEMORY_LIMIT}
+    ports:
+      - "9604:80"
+      - "9605:443"
+    networks:
+      - notebook_nw
+    volumes:
+      - /sessions
+
+  redis:
+    container_name: redis_notebook
+    image: redis:latest
+    ports:
+      - "9606:6379"
+    networks:
+      - notebook_nw
+
+  pgadmin:
+    container_name: pgadmin_notebook
+    #image: dpage/pgadmin4
+    build:
+      context: .
+      dockerfile: Dockerfile.pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'victor.catalan@device.cl'
+      PGADMIN_DEFAULT_PASSWORD: '123456'
+    user: "${UID}:${GID}"
+    volumes:
+      - pgadmin:/root/.pgadmin
+      - ./scripts:/var/lib/pgadmin/storage/victor.catalan_device.cl/
+    ports:
+      - "9602:80"
+    networks:
+      - notebook_nw
+    restart: unless-stopped
+
+  postgres:
+    container_name: postgres_notebook
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: '1q2w3e4r5t'
+      PGDATA: /data/postgres
+    volumes:
+      - postgres:/data/postgres
+      - ./scripts:/opt/scripts_sql
+      - ./data:/tmp/data
+    ports:
+      - "9601:5432"
+    networks:
+      - notebook_nw
+    restart: unless-stopped
+
+volumes:
+  postgres:
+  mysql:
+  pgadmin:
   #r4_jupyter_vol:
 
-
+networks:
+  notebook_nw:
+    driver: bridge
 
 
